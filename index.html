@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مرحباً بكم</title>
+<style>
+:root{--bg:#f4f7f5;--green:#168a55;--dark:#18352a}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(145deg,#e7f5ed,#f8fbf9);color:var(--dark);min-height:100vh;display:grid;place-items:center;padding:22px}
+main{width:min(100%,560px);background:white;border-radius:24px;padding:34px 25px;text-align:center;box-shadow:0 14px 45px #12332218}
+.logo{width:68px;height:68px;border-radius:22px;background:#e4f5eb;color:var(--green);display:grid;place-items:center;font-size:34px;margin:0 auto 18px}
+h1{font-size:clamp(27px,6vw,38px);margin:8px 0 14px}
+p{font-size:17px;line-height:1.9;color:#557064;margin:0 0 25px}
+a.cta{display:inline-block;background:var(--green);color:white;text-decoration:none;padding:14px 25px;border-radius:14px;font-weight:bold;font-size:17px}
+a.cta:hover{filter:brightness(.94)}
+.edit{margin-top:25px;border:1px solid #dce9e1;background:#f8fbf9;color:#315744;border-radius:12px;padding:10px 16px;font:inherit}
+.panel{display:none;text-align:right;margin-top:22px;padding:18px;background:#f5faf7;border-radius:15px}
+.panel.show{display:block}
+label{display:block;font-size:14px;margin:12px 0 6px}
+input,textarea{width:100%;padding:12px;border:1px solid #cfdfd5;border-radius:10px;font:inherit;background:white}
+textarea{min-height:86px;resize:vertical}
+.actions{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+.actions button{border:0;border-radius:10px;padding:11px 16px;font:inherit;background:var(--green);color:white}
+.actions button.cancel{background:#e5eee8;color:#315744}
+small{display:block;color:#819188;margin-top:18px;line-height:1.7}
+</style>
+</head>
+<body>
+<main>
+  <div class="logo">✦</div>
+  <h1 id="heading">مرحباً بكم في صفحتنا</h1>
+  <p id="description">يسعدنا وجودكم معنا. يمكنكم التواصل معنا مباشرة عبر واتساب من خلال الزر بالأسفل.</p>
+  <a class="cta" id="whatsapp" href="https://wa.me/" target="_blank" rel="noopener">تواصل معنا عبر واتساب</a>
+
+  <button class="edit" id="editButton" type="button">✏️ تعديل الصفحة</button>
+  <section class="panel" id="panel">
+    <label for="headingInput">عنوان الترحيب</label>
+    <input id="headingInput" value="مرحباً بكم في صفحتنا">
+    <label for="descriptionInput">النص التعريفي</label>
+    <textarea id="descriptionInput">يسعدنا وجودكم معنا. يمكنكم التواصل معنا مباشرة عبر واتساب من خلال الزر بالأسفل.</textarea>
+    <label for="linkInput">رابط واتساب (مثال: https://wa.me/201xxxxxxxxx)</label>
+    <input id="linkInput" type="url" placeholder="ضع رابط واتساب هنا">
+    <label for="buttonInput">كلام الزر</label>
+    <input id="buttonInput" value="تواصل معنا عبر واتساب">
+    <div class="actions">
+      <button id="saveButton" type="button">حفظ التعديلات على هذا الجهاز</button>
+      <button class="cancel" id="closeButton" type="button">إغلاق</button>
+    </div>
+    <small>ملاحظة: التعديلات تُحفظ في المتصفح على هذا الجهاز فقط. لتغيير النسخة المنشورة لكل الزوار، يلزم تحديث ملفات الموقع ثم إعادة نشرها.</small>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const defaults = {
+ heading: $('heading').textContent,
+ description: $('description').textContent,
+ link: '',
+ button: $('whatsapp').textContent
+};
+function apply(data){
+ $('heading').textContent=data.heading;
+ $('description').textContent=data.description;
+ $('whatsapp').textContent=data.button;
+ $('whatsapp').href=data.link || 'https://wa.me/';
+ $('headingInput').value=data.heading;
+ $('descriptionInput').value=data.description;
+ $('linkInput').value=data.link;
+ $('buttonInput').value=data.button;
+}
+try { const saved=localStorage.getItem('welcomePageSettings'); if(saved) apply({...defaults,...JSON.parse(saved)}); } catch(e){}
+$('editButton').onclick=()=>$('panel').classList.toggle('show');
+$('closeButton').onclick=()=>$('panel').classList.remove('show');
+$('saveButton').onclick=()=>{
+ const link=$('linkInput').value.trim();
+ if(link && !/^https:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(link)){
+   alert('من فضلك أدخل رابط واتساب يبدأ بـ https://wa.me/ أو https://api.whatsapp.com/');
+   return;
+ }
+ const data={heading:$('headingInput').value.trim()||defaults.heading,
+ description:$('descriptionInput').value.trim(),
+ link,button:$('buttonInput').value.trim()||defaults.button};
+ apply(data);
+ try{localStorage.setItem('welcomePageSettings',JSON.stringify(data));alert('تم حفظ التعديلات على هذا الجهاز.');}
+ catch(e){alert('تعذر الحفظ في هذا المتصفح.');}
+};
+</script>
+</body>
+</html>
